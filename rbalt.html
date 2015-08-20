@@ -1,0 +1,261 @@
+﻿<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ETS Radio Button Alternative Web Component</title>
+    <link rel="stylesheet" type="text/css" href="css/rbalt.css" />
+	
+	<!-- web component stuff here -->
+    <script src="poly1.0/components/bower_components/webcomponentsjs/webcomponents.min.js"></script>
+	<link rel="import" href="poly1.0/components/bower_components/polymer/polymer.html" />
+		
+</head>
+<body>
+
+<dom-module id="ets-rblist">
+  <template>
+	<ul>
+		<content></content>
+    </ul>
+  </template>
+  <script>
+    Polymer({
+        is: "ets-rblist"          
+    });
+  </script>
+</dom-module>
+
+<dom-module id="ets-rblist-rb">
+  <style>
+	:host {
+		display: block;
+		margin: 15px auto;
+		list-style: none;
+		width: 50%;
+    }
+  </style>
+  <template>
+    <content></content>
+  </template>
+  <script>
+    Polymer({
+        is: "ets-rblist-rb",
+		hostAttributes: {
+          tabindex: 0,
+          role: "checkbox",
+		  "aria-checked": "false"
+        },
+		listeners: {
+			"click": "handleClick",
+			"keydown" : "handleKeyDown",
+			"keypress" : "handleKeyPress"
+		},
+		toggleState: function(e) {
+			// Is this radio button checked?
+			var isChecked = this.getAttribute("aria-checked");
+			
+            // Uncheck all radio buttons.
+			var mylist = document.getElementsByTagName ('ets-rblist-rb');
+			for (i = 0; i < mylist.length; i++) {
+				mylist[i].setAttribute("aria-checked", "false");
+				var myimg = mylist[i].firstElementChild;
+				var mydiv = myimg.firstElementChild;
+				mydiv.setAttribute("class", "imgUnchecked style-scope ets-rblist-rb-img");
+			}
+			
+            // Toggle the state of this radio button.
+            var thisimg = this.firstElementChild;
+            var thisdiv = thisimg.firstElementChild;
+			if (isChecked == "true") {
+				this.setAttribute("aria-checked", "false");
+                thisdiv.setAttribute("class", "imgUnchecked style-scope ets-rblist-rb-img");
+            }
+            else {
+				this.setAttribute("aria-checked", "true");
+                thisdiv.setAttribute("class", "imgChecked style-scope ets-rblist-rb-img");
+            }
+		},
+		handleKeyPress: function(e) {
+			if (e.altKey) { 
+				// do nothing 
+				return true; 
+			}    
+			switch (e.keyCode) {
+				// space
+				case 32: {          
+					// consume the event 
+					e.stopPropagation();
+					return false;
+					break;
+				}
+				// enter
+				case 13: { 
+					if (e.ctrlKey || e.shiftKey) { 
+						// do nothing 
+						return true; 
+					}
+					break;
+				}
+				case 37: 	//left
+				case 38:	//up
+				case 39:	//right
+				case 40: {	//down
+					if (e.shiftKey) { 
+						// do nothing 
+						return true; 
+					} 
+					e.stopPropagation(); 
+					return false; 
+					break;
+				}
+			}
+			return true; 
+		},
+		handleKeyDown: function(e) {
+			if (e.altKey || e.ctrlKey || e.shiftKey) {
+				// do nothing 
+				return true;
+			}
+			switch (e.keyCode) {
+				// enter or space
+				case 13:
+				case 32: {
+					// toggle the checkbox state 
+					this.toggleState();
+					e.stopPropagation();
+					return false;
+					break;
+				}
+				// left arrow or up arrow
+				case 37:
+				case 38: {
+					// get previous button and give it focus.
+					var prev = this.previousSibling.previousSibling;
+					if ((prev != undefined) && (prev.nodeType == 1)) {
+						prev.focus();
+					}
+					e.stopPropagation();
+					return false;
+					break;
+				}
+				// right arrow or down arrow
+				case 39:
+				case 40: {
+					// get next button and give it focus.
+					var next = this.nextSibling.nextSibling;
+					if ((next != undefined) && (next.nodeType == 1)) {
+						next.focus();
+					}
+					e.stopPropagation();
+					return false;
+					break;
+				}
+			}
+			return true;    
+		},
+		handleClick: function(e) {
+			this.toggleState();
+            e.stopPropagation();
+            return false;      
+        }        
+    });
+  </script>
+</dom-module>
+
+<dom-module id="ets-rblist-rb-span">
+  <style>
+	:host {
+		display: block;
+		margin-left: 50px;
+    }
+  </style>  
+  <template>
+	<span>
+		<content></content>
+    </span>
+  </template>
+  <script>
+    Polymer({
+        is: "ets-rblist-rb-span",
+    });
+  </script>
+</dom-module>
+ 
+ <dom-module id="ets-rblist-rb-img">
+  <style>
+	:host {
+		float: left;
+		margin-right: 7px;        
+    }
+    .imgUnchecked {
+        width: 30px;
+        height: 15px;
+        border: 1px solid #000000;
+        margin-top: 2px;
+        background-color: #ffffff;
+        -moz-border-radius: 100px / 50px;
+        -webkit-border-radius: 100px / 50px;
+        border-radius: 100px / 50px;
+    }
+    .imgChecked {
+        width: 30px;
+        height: 15px;
+        border: 1px solid #000000;
+        margin-top: 2px;
+        background-color: #676767;
+        -moz-border-radius: 100px / 50px;
+        -webkit-border-radius: 100px / 50px;
+        border-radius: 100px / 50px;
+    }
+
+  </style>  
+  <template>
+	<div class="imgUnchecked">
+		<content></content>
+    </div>
+  </template>
+  <script>
+    Polymer({
+        is: "ets-rblist-rb-img",
+    });
+  </script>
+</dom-module>
+	
+    <div role="main">    
+	<p class="offscreen">Please choose one of the options below that best completes the sentence.</p>
+		<p id="p1">	
+		One of the effects of the east-west orientation of the Alpine mountain system and the northern plains of western and central Europe is that it
+	</p>
+	<ets-rblist>
+		<ets-rblist-rb>
+			<ets-rblist-rb-img></ets-rblist-rb-img>
+			<ets-rblist-rb-span>
+				limits the marine climate of Europe to coastal areas
+			</ets-rblist-rb-span>
+		</ets-rblist-rb>
+		<ets-rblist-rb>
+			<ets-rblist-rb-img></ets-rblist-rb-img>
+			<ets-rblist-rb-span>
+				provides a corridor for communication between southern and northern Europe
+			</ets-rblist-rb-span>
+		</ets-rblist-rb>           
+		<ets-rblist-rb>
+			<ets-rblist-rb-img></ets-rblist-rb-img>
+			<ets-rblist-rb-span>
+				enables marine-like climatic conditions to extend eastward into Germany and Poland
+			</ets-rblist-rb-span>
+		</ets-rblist-rb>           
+		<ets-rblist-rb>
+			<ets-rblist-rb-img></ets-rblist-rb-img>
+			<ets-rblist-rb-span>
+				effectively prevents population movement between parts of the Mediterranean region
+			</ets-rblist-rb-span>
+		</ets-rblist-rb>	
+	</ets-rblist>
+								
+    </div>
+</body>
+</html>

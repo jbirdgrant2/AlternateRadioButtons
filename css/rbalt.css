@@ -1,0 +1,7 @@
+body {font-size: large;}
+#p1 {margin: 50px auto; width: 50%;}
+.offscreen { 
+   position: absolute; 
+   left: -200em; 
+   top: -20em; 
+} 
